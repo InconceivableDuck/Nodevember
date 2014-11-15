@@ -50,7 +50,7 @@ $ docker run -i -t username/hello:1.0 /bin/bash
 ```
 FROM ubuntu:14.04
 RUN mkdir -p /opt/acme
-RUN echo “Hello” > /opt/acme/hello.txt
+RUN echo "Hello" > /opt/acme/hello.txt
 CMD /bin/bash
 ```
 
