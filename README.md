@@ -106,3 +106,8 @@ $ docker run -d -v /mnt/logs:/logs -p 84:80 app
 ```
 $ docker run -d -v /mnt/logs:/logs -p 80:80 haproxy
 ```
+
+Quickly stop, remove, and delete all images:
+```
+docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
+```
