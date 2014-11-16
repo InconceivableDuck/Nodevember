@@ -212,7 +212,39 @@ stdout_logfile_maxbytes=1GB
 redirect_stderr=true
 ```
 
-### 19. Running Node.js
+### 19. Node.js haproxy.cfg
+```
+global
+    maxconn 65535
+    #daemon
+
+defaults
+    mode    http
+    option                  httplog
+    option                  dontlognull
+    option http-server-close
+    option forwardfor       except 127.0.0.0/8
+    option                  redispatch
+    retries                 3
+    timeout http-request    1d
+    timeout queue           1m
+    timeout connect         10s
+    timeout client          10m
+    timeout server          10m
+    timeout http-keep-alive 10s
+    timeout check           10s
+    maxconn                 64000
+
+listen app *:80
+    mode http
+    balance roundrobin
+    server app1 127.0.0.1:8081
+    server app2 127.0.0.1:8082
+    server app3 127.0.0.1:8083
+    server app4 127.0.0.1:8084
+```
+
+### 20. Running Node.js
 ```
 $ mkdir -p /mnt/logs
 $ docker run -d -v /mnt/logs:/logs -p 80:80 app
