@@ -59,7 +59,7 @@ $ docker build -t inconceivableduck/hello:1.0 .
 $ docker run -i -t inconceivableduck/hello:1.0
 ```
 
-### 8. Dockerize Redis
+### 8. Redis Dockerfile
 ```
 FROM ubuntu:14.04
 RUN apt-get update -y && apt-get install -y wget build-essential
@@ -75,7 +75,7 @@ EXPOSE 6379
 CMD "/usr/bin/supervisord"
 ```
 
-### 9. Supervisor
+### 9. Redis supervisor.conf
 ```
 [supervisord]
 nodaemon=true
@@ -101,4 +101,119 @@ sudo ./baseimage-docker-master/install-tools.sh
 $ docker ps
 $ docker-bash [CONTAINER_ID]
 # supervisorctl
+```
+
+### 12. Mongo Dockerfile
+```
+FROM ubuntu:14.04
+RUN apt-get update -y && apt-get install -y wget
+RUN apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+RUN mkdir -p /data
+RUN mkdir -p /logs
+RUN cd /opt && wget -nv http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-2.6.5.tgz
+RUN cd /opt && tar -xvzf mongodb-linux-x86_64-2.6.5.tgz
+ADD mongo.conf /opt/mongodb-linux-x86_64-2.6.5/mongo.conf
+ADD supervisor.conf /etc/supervisor/conf.d/supervisor.conf
+EXPOSE 27017
+CMD "/usr/bin/supervisord"
+```
+
+### 13. Mongo supervisor.conf
+```
+[supervisord]
+nodaemon=true
+
+[program:mongo]
+command=/opt/mongodb-linux-x86_64-2.6.5/bin/mongod --config    /opt/mongodb-linux-x86_64-2.6.5/mongo.conf
+```
+
+### 14. Mongo mongo.conf
+```
+logpath = /logs/mongo.log
+logappend = true
+dbpath = /data/mongo
+smallfiles = true
+```
+
+### 15. Running Mongo
+```
+$ mkdir -p /mnt/data/mongo
+$ mkdir -p /mnt/logs
+$ docker run -d -v /mnt/data:/data -v /mnt/logs:/logs -p 27017:27017 mongo
+```
+
+### 16. Node.js index.js
+```
+var http = require('http');
+http.createServer(function (req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('My port is ' + process.env.PORT);
+}).listen(process.env.PORT);
+console.log('Server running on port ' + process.env.PORT);
+```
+
+### 17. Node.js Dockerfile
+```
+FROM ubuntu:14.04
+RUN apt-get update -y && apt-get install -y curl wget git supervisor build-essential
+RUN mkdir -p /var/log/supervisor
+RUN mkdir -p /data
+RUN mkdir -p /logs
+RUN cd /opt && git clone https://github.com/InconceivableDuck/Nodevember.git
+RUN curl https://raw.githubusercontent.com/isaacs/nave/master/nave.sh > /opt/nave.sh
+RUN bash /opt/nave.sh usemain 0.10.33
+RUN cd /opt && wget http://www.haproxy.org/download/1.5/src/haproxy-1.5.3.tar.gz
+RUN cd /opt && tar xzf haproxy-1.5.3.tar.gz
+RUN cd /opt/haproxy-1.5.3 && make TARGET=linux2628 && make install
+ADD haproxy.cfg /opt/haproxy-1.5.3/haproxy.cfg
+ADD supervisor.conf /etc/supervisor/conf.d/supervisor.conf
+EXPOSE 80 8081 8082 8083
+CMD "/usr/bin/supervisord"
+```
+
+### 18. Node.js supervisor.conf
+```
+[supervisord]
+nodaemon=true
+
+[program:app1]
+command=node /opt/Nodevember/app/index.js
+environment=PORT="8081"
+stdout_logfile=/logs/app1.log
+stdout_logfile_maxbytes=1GB
+redirect_stderr=true
+
+[program:app2]
+command=node /opt/Nodevember/app/index.js
+environment=PORT="8082"
+stdout_logfile=/logs/app2.log
+stdout_logfile_maxbytes=1GB
+redirect_stderr=true
+
+[program:app3]
+command=node /opt/Nodevember/app/index.js
+environment=PORT="8083"
+stdout_logfile=/logs/app3.log
+stdout_logfile_maxbytes=1GB
+redirect_stderr=true
+
+[program:app4]
+command=node /opt/Nodevember/app/index.js
+environment=PORT="8084"
+stdout_logfile=/logs/app4.log
+stdout_logfile_maxbytes=1GB
+redirect_stderr=true
+
+[program:haproxy]
+command=haproxy -f /opt/haproxy-1.5.3/haproxy.cfg
+stdout_logfile=/logs/haproxy.log
+stdout_logfile_maxbytes=1GB
+redirect_stderr=true
+```
+
+### 19. Running Node.js
+```
+$ mkdir -p /mnt/logs
+$ docker run -d -v /mnt/logs:/logs -p 80:80 app
 ```
