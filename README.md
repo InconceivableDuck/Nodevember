@@ -62,13 +62,13 @@ $ docker run -i -t inconceivableduck/hello:1.0
 ### Mongo, Redis, Node.js files
 The Dockerfiles and config files for each specific app is located in subfolders: /redis, /mongo, /app, and /haproxy.
 
-### 10. Running Redis
+### 8. Running Redis
 ```
 $ mkdir -p /mnt/data/redis
 $ docker run -d -v /mnt/data:/data -p 6379:6379 redis
 ```
 
-### 11. docker-bash
+### 9. docker-bash
 ```
 // Install
 $ curl --fail -L -O https://github.com/phusion/baseimage-docker/archive/master.tar.gz && \
@@ -81,15 +81,28 @@ $ docker-bash [CONTAINER_ID]
 # supervisorctl
 ```
 
-### 15. Running Mongo
+### 10. Running Mongo
 ```
 $ mkdir -p /mnt/data/mongo
 $ mkdir -p /mnt/logs
 $ docker run -d -v /mnt/data:/data -v /mnt/logs:/logs -p 27017:27017 mongo
 ```
 
-### 20. Running Node.js
+### 11. Running Node.js
 ```
 $ mkdir -p /mnt/logs
 $ docker run -d -v /mnt/logs:/logs -p 80:80 app
+```
+
+### 12. Running a bunch of Node.js
+```
+$ docker run -d -v /mnt/logs:/logs -p 81:80 app
+$ docker run -d -v /mnt/logs:/logs -p 82:80 app
+$ docker run -d -v /mnt/logs:/logs -p 83:80 app
+$ docker run -d -v /mnt/logs:/logs -p 84:80 app
+```
+
+### 13. Running haproxy load balancer
+```
+$ docker run -d -v /mnt/logs:/logs -p 80:80 haproxy
 ```
