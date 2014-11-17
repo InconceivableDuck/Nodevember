@@ -1,3 +1,6 @@
+# Nodevember 2014
+The content in this repo were created for the [Nodevember 2014](http://nodevember.org) talk "Deploying a Scalable Node.js Application with Docker". This README contains the text on the slides for easy copy/paste. The subfolders contain the Dockerfiles and configuration files for each specific application we're dockerizing. The raw keynotes slides are available in slides.zip. A pdf version is available in slides.pdf.
+
 ## Code from Slides
 
 ### 1. Installing Docker
