@@ -6,7 +6,7 @@ The content in this repo were created for the [Nodevember 2014](http://nodevembe
 ### 1. Installing Docker
 ```
 $ sudo apt-get install linux-image-extra-`uname -r`
-$ curl -sSL https://get.docker.com/ubuntu/ | sudo sh
+$ curl -sSL https://get.docker.com/ | sudo sh
 $ docker run -i -t ubuntu /bin/bash
 ```
 
